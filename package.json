@@ -1,0 +1,41 @@
+{
+  "name": "flashcard-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for language learning flashcards with Unsplash images via Telegram",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "flashcard-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "flashcard",
+    "language-learning",
+    "telegram",
+    "unsplash",
+    "claude",
+    "model-context-protocol"
+  ],
+  "author": "Hatip Aksunger",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
