@@ -55,6 +55,10 @@ export function createAdminClient(baseUrl: string = DEFAULT_BASE_URL) {
     // Grammar
     getGrammarLessons: () => get<any>("/admin/grammar"),
     getGrammarLesson: (id: string) => get<any>(`/admin/grammar/${id}`),
+    updateGrammarScript: (id: string, podcastScript: any) =>
+      patch<any>(`/admin/grammar/${id}/script`, { podcast_script: podcastScript }),
+    updateGrammarContent: (id: string, data: { topic?: string; topic_tr?: string; content?: string; content_tr?: string }) =>
+      patch<any>(`/admin/grammar/${id}/content`, data),
 
     // Words
     getAllWords: (limit = 50) => get<any>(`/admin/words/all?limit=${limit}`),

@@ -153,6 +153,54 @@ export function registerAdminTools(server: McpServer, client: AdminClient): void
   );
 
   server.tool(
+    "update_grammar_script",
+    "Update the podcast script for a grammar lesson. The script is a JSON array of segments that will be sent to TTS.",
+    {
+      lessonId: z.string().describe("The grammar lesson ID (e.g. 'b1-relative-clauses')"),
+      script: z.array(z.object({
+        text: z.string().describe("The text to speak"),
+        language: z.enum(["et", "tr", "en"]).describe("Language code"),
+        pause_after_ms: z.number().describe("Pause duration after this segment in ms"),
+      })).describe("Array of podcast segments"),
+    },
+    async ({ lessonId, script }) => {
+      await client.updateGrammarScript(lessonId, script);
+      return {
+        content: [{
+          type: "text" as const,
+          text: `Script saved for ${lessonId} (${script.length} segments)`,
+        }],
+      };
+    },
+  );
+
+  server.tool(
+    "update_grammar_content",
+    "Update the content/explanation of a grammar lesson. Can update topic, topic_tr, content, content_tr fields.",
+    {
+      lessonId: z.string().describe("The grammar lesson ID"),
+      topic: z.string().optional().describe("Topic in English"),
+      topic_tr: z.string().optional().describe("Topic in Turkish"),
+      content: z.string().optional().describe("Grammar explanation in English"),
+      content_tr: z.string().optional().describe("Grammar explanation in Turkish"),
+    },
+    async ({ lessonId, topic, topic_tr, content, content_tr }) => {
+      const data: any = {};
+      if (topic !== undefined) data.topic = topic;
+      if (topic_tr !== undefined) data.topic_tr = topic_tr;
+      if (content !== undefined) data.content = content;
+      if (content_tr !== undefined) data.content_tr = content_tr;
+      await client.updateGrammarContent(lessonId, data);
+      return {
+        content: [{
+          type: "text" as const,
+          text: `Content updated for ${lessonId}`,
+        }],
+      };
+    },
+  );
+
+  server.tool(
     "get_user_context",
     "Export a user's learning context (level, weak words, quiz stats) for personalized content generation.",
     {
