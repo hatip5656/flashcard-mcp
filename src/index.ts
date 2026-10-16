@@ -6,6 +6,8 @@ import { registerCreateFlashcard } from "./tools/create-flashcard.js";
 import { registerSearchImage } from "./tools/search-image.js";
 import { registerAdminTools } from "./tools/admin-tools.js";
 import { login, createAdminClient } from "./services/admin-api.js";
+import { registerTestGeneratorTools } from "./tools/test-generator-tools.js";
+import { createTestGeneratorClient } from "./services/test-generator-api.js";
 
 const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
 const adminApiUrl = process.env.ADMIN_API_URL || "https://wordagram.hatip.dev/api";
@@ -38,7 +40,13 @@ const server = new McpServer(
       "1. get_unlinked_sentences → batch of sentences to analyze\n" +
       "2. get_grammar_ai_prompt → prompt template with all grammar rules\n" +
       "3. Analyze each sentence against the grammar list\n" +
-      "4. link_sentence_grammar or bulk_link_sentence_grammar → save connections",
+      "4. link_sentence_grammar or bulk_link_sentence_grammar → save connections\n\n" +
+      "TEST AUTHORING WORKFLOW (generated listening/reading/grammar tests):\n" +
+      "1. list_test_blueprints → pick a blueprint\n" +
+      "2. get_test_instructions(blueprintId, level, topic) → what to write and the exact draft JSON format\n" +
+      "3. Write the draft (natural Estonian at that level, one correct answer per question)\n" +
+      "4. create_test_draft → the server validates it and voices listening scripts with TTS\n" +
+      "5. Fix any errors with update_test_draft; a person reviews and publishes in the admin (publish_test_draft only when asked)",
   },
 );
 
@@ -58,6 +66,7 @@ async function main(): Promise<void> {
       console.error(`[flashcard-mcp] Authenticated as ${adminUsername}`);
       const client = createAdminClient(adminApiUrl);
       registerAdminTools(server, client);
+      registerTestGeneratorTools(server, createTestGeneratorClient(adminApiUrl, adminUsername, adminPassword));
       console.error("[flashcard-mcp] Admin tools registered (10 tools)");
     } catch (e) {
       console.error(`[flashcard-mcp] Admin auth failed: ${e}`);
